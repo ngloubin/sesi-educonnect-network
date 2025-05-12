@@ -1,10 +1,20 @@
 
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 
 export default function Layout() {
+  const location = useLocation();
+  
+  // Determine if current route needs navbar/sidebar (only for non-login related routes)
+  const isLoginFlow = location.pathname.includes('/grade-selection') || 
+                      location.pathname.includes('/login/');
+  
+  if (isLoginFlow) {
+    return <Outlet />;
+  }
+  
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

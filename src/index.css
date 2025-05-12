@@ -102,3 +102,26 @@
 .card-hover {
   @apply transition-all duration-300 hover:shadow-lg hover:scale-[1.02];
 }
+
+/* Pirassununga local style elements */
+.pirassununga-bg {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5" /><path d="M25,75 Q50,25 75,75" stroke="rgba(255,255,255,0.05)" fill="none" stroke-width="0.5" /></svg>');
+  background-repeat: repeat;
+  background-size: 400px 400px;
+}
+
+/* Animation Utilities */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
