@@ -1,113 +1,30 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ModerateVideoCard } from "@/components/video/ModerateVideoCard";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Define a common video type to ensure consistency across all video arrays
-interface VideoData {
-  id: string;
-  title: string;
-  thumbnail: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  uploadDate: string;
-  status: "pending" | "approved" | "rejected";
-  transcription?: string; // Make transcription optional
-}
-
-// Sample data for videos pending moderation
-const samplePendingVideos: VideoData[] = [
-  {
-    id: "1",
-    title: "Introdução à Física Quântica",
-    thumbnail: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?q=80&w=1974&auto=format&fit=crop",
-    author: {
-      name: "Carlos Santos",
-      avatar: "https://i.pravatar.cc/150?img=11"
-    },
-    uploadDate: "Hoje, 09:15",
-    status: "pending",
-    transcription: "Nesta aula, vamos explorar os conceitos básicos da física quântica e como ela revolucionou nossa compreensão do universo. Começaremos falando sobre a dualidade onda-partícula e o princípio da incerteza de Heisenberg."
-  },
-  {
-    id: "2",
-    title: "Técnicas de Redação para o ENEM",
-    thumbnail: "https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?q=80&w=1948&auto=format&fit=crop",
-    author: {
-      name: "Juliana Mendes",
-      avatar: "https://i.pravatar.cc/150?img=9"
-    },
-    uploadDate: "Ontem, 16:45",
-    status: "pending",
-    transcription: "Bem-vindos à nossa aula sobre redação para o ENEM. Hoje veremos como estruturar seu texto para conseguir uma nota máxima, explorando os critérios de avaliação e técnicas de argumentação."
-  },
-  {
-    id: "3",
-    title: "Projeto de Robótica - Montagem de Sensores",
-    thumbnail: "https://images.unsplash.com/photo-1611078489935-0cb964de46d6?q=80&w=1974&auto=format&fit=crop",
-    author: {
-      name: "Rodrigo Almeida",
-      avatar: "https://i.pravatar.cc/150?img=12"
-    },
-    uploadDate: "3 dias atrás",
-    status: "pending",
-    transcription: "Neste tutorial, vamos aprender a montar e programar sensores para nossos projetos de robótica. Começaremos com sensores ultrassônicos e depois avançaremos para sensores infravermelhos e de temperatura."
-  }
-];
-
-// Sample data for approved and rejected videos, now with transcription
-const sampleApprovedVideos: VideoData[] = [
-  {
-    id: "4",
-    title: "História do Brasil - Era Vargas",
-    thumbnail: "https://images.unsplash.com/photo-1594809512566-021c1d533086?q=80&w=1980&auto=format&fit=crop",
-    author: {
-      name: "Amanda Pereira",
-      avatar: "https://i.pravatar.cc/150?img=18"
-    },
-    uploadDate: "1 semana atrás",
-    status: "approved",
-    transcription: "Nesta aula sobre a Era Vargas, vamos analisar o período em que Getúlio Vargas governou o Brasil, abordando o Estado Novo e as transformações políticas e econômicas do país."
-  },
-  {
-    id: "5",
-    title: "Geometria Espacial - Poliedros",
-    thumbnail: "https://images.unsplash.com/photo-1551307090-1c99666f969d?q=80&w=2070&auto=format&fit=crop",
-    author: {
-      name: "Lucas Ferreira",
-      avatar: "https://i.pravatar.cc/150?img=19"
-    },
-    uploadDate: "2 semanas atrás",
-    status: "approved",
-    transcription: "Nesta aula de geometria espacial, abordaremos os poliedros, seus elementos, classificações e propriedades. Vamos estudar os poliedros de Platão e resolver exercícios práticos."
-  }
-];
-
-const sampleRejectedVideos: VideoData[] = [
-  {
-    id: "6",
-    title: "Análise Literária - Machado de Assis",
-    thumbnail: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1973&auto=format&fit=crop",
-    author: {
-      name: "Beatriz Costa",
-      avatar: "https://i.pravatar.cc/150?img=23"
-    },
-    uploadDate: "3 dias atrás",
-    status: "rejected",
-    transcription: "Analisaremos nesta aula as principais obras de Machado de Assis, com foco em Dom Casmurro e Memórias Póstumas de Brás Cubas, explorando os temas recorrentes e o estilo narrativo do autor."
-  }
-];
+import { VideoFilterControls } from "@/components/video/VideoFilterControls";
+import { VideoList } from "@/components/video/VideoList";
+import { VideoData } from "@/types/video";
+import { useVideoFiltering } from "@/hooks/useVideoFiltering";
+import { 
+  samplePendingVideos, 
+  sampleApprovedVideos, 
+  sampleRejectedVideos 
+} from "@/data/sampleVideos";
 
 export default function VideoModeration() {
   const [pendingVideos, setPendingVideos] = useState<VideoData[]>(samplePendingVideos);
   const [approvedVideos, setApprovedVideos] = useState<VideoData[]>(sampleApprovedVideos);
   const [rejectedVideos, setRejectedVideos] = useState<VideoData[]>(sampleRejectedVideos);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dateFilter, setDateFilter] = useState("all");
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    dateFilter,
+    setDateFilter,
+    filteredPendingVideos,
+    filteredApprovedVideos,
+    filteredRejectedVideos
+  } = useVideoFiltering(pendingVideos, approvedVideos, rejectedVideos);
 
   const handleApproveVideo = (videoId: string) => {
     const videoToApprove = pendingVideos.find(video => video.id === videoId);
@@ -127,56 +44,16 @@ export default function VideoModeration() {
     }
   };
 
-  // Filter videos by search term and date
-  const filterVideos = (videos: VideoData[]) => {
-    return videos.filter(video => {
-      const matchesSearch = video.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           video.author.name.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      if (!matchesSearch) return false;
-      
-      if (dateFilter === "today") {
-        return video.uploadDate.includes("Hoje");
-      } else if (dateFilter === "week") {
-        return !video.uploadDate.includes("semanas") && !video.uploadDate.includes("meses");
-      }
-      
-      return true;
-    });
-  };
-
-  const filteredPendingVideos = filterVideos(pendingVideos);
-  const filteredApprovedVideos = filterVideos(approvedVideos);
-  const filteredRejectedVideos = filterVideos(rejectedVideos);
-
   return (
     <div className="max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Moderação de Vídeos</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <Label htmlFor="search" className="mb-2 block">Pesquisar vídeos</Label>
-          <Input
-            id="search"
-            placeholder="Buscar por título ou autor..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="date-filter" className="mb-2 block">Filtrar por data</Label>
-          <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger id="date-filter">
-              <SelectValue placeholder="Filtrar por data" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os períodos</SelectItem>
-              <SelectItem value="today">Hoje</SelectItem>
-              <SelectItem value="week">Esta semana</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <VideoFilterControls
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        dateFilter={dateFilter}
+        onDateFilterChange={setDateFilter}
+      />
       
       <Tabs defaultValue="pending">
         <TabsList className="grid grid-cols-3 mb-6">
@@ -192,55 +69,27 @@ export default function VideoModeration() {
           <TabsTrigger value="rejected">Rejeitados</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="pending" className="space-y-6">
-          {filteredPendingVideos.length > 0 ? (
-            filteredPendingVideos.map(video => (
-              <ModerateVideoCard
-                key={video.id}
-                video={video}
-                onApprove={handleApproveVideo}
-                onReject={handleRejectVideo}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 bg-muted/50 rounded-lg">
-              <p className="text-muted-foreground">Nenhum vídeo pendente encontrado.</p>
-            </div>
-          )}
+        <TabsContent value="pending">
+          <VideoList 
+            videos={filteredPendingVideos}
+            onApprove={handleApproveVideo}
+            onReject={handleRejectVideo}
+            emptyMessage="Nenhum vídeo pendente encontrado."
+          />
         </TabsContent>
         
-        <TabsContent value="approved" className="space-y-6">
-          {filteredApprovedVideos.length > 0 ? (
-            filteredApprovedVideos.map(video => (
-              <ModerateVideoCard
-                key={video.id}
-                video={video}
-                onApprove={handleApproveVideo}
-                onReject={handleRejectVideo}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 bg-muted/50 rounded-lg">
-              <p className="text-muted-foreground">Nenhum vídeo aprovado encontrado.</p>
-            </div>
-          )}
+        <TabsContent value="approved">
+          <VideoList 
+            videos={filteredApprovedVideos}
+            emptyMessage="Nenhum vídeo aprovado encontrado."
+          />
         </TabsContent>
         
-        <TabsContent value="rejected" className="space-y-6">
-          {filteredRejectedVideos.length > 0 ? (
-            filteredRejectedVideos.map(video => (
-              <ModerateVideoCard
-                key={video.id}
-                video={video}
-                onApprove={handleApproveVideo}
-                onReject={handleRejectVideo}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 bg-muted/50 rounded-lg">
-              <p className="text-muted-foreground">Nenhum vídeo rejeitado encontrado.</p>
-            </div>
-          )}
+        <TabsContent value="rejected">
+          <VideoList 
+            videos={filteredRejectedVideos}
+            emptyMessage="Nenhum vídeo rejeitado encontrado."
+          />
         </TabsContent>
       </Tabs>
     </div>
