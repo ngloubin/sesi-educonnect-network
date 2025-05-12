@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -6,8 +5,22 @@ import { Label } from "@/components/ui/label";
 import { ModerateVideoCard } from "@/components/video/ModerateVideoCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Define a common video type to ensure consistency across all video arrays
+interface VideoData {
+  id: string;
+  title: string;
+  thumbnail: string;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  uploadDate: string;
+  status: "pending" | "approved" | "rejected";
+  transcription?: string; // Make transcription optional
+}
+
 // Sample data for videos pending moderation
-const samplePendingVideos = [
+const samplePendingVideos: VideoData[] = [
   {
     id: "1",
     title: "Introdução à Física Quântica",
@@ -17,7 +30,7 @@ const samplePendingVideos = [
       avatar: "https://i.pravatar.cc/150?img=11"
     },
     uploadDate: "Hoje, 09:15",
-    status: "pending" as const,
+    status: "pending",
     transcription: "Nesta aula, vamos explorar os conceitos básicos da física quântica e como ela revolucionou nossa compreensão do universo. Começaremos falando sobre a dualidade onda-partícula e o princípio da incerteza de Heisenberg."
   },
   {
@@ -29,7 +42,7 @@ const samplePendingVideos = [
       avatar: "https://i.pravatar.cc/150?img=9"
     },
     uploadDate: "Ontem, 16:45",
-    status: "pending" as const,
+    status: "pending",
     transcription: "Bem-vindos à nossa aula sobre redação para o ENEM. Hoje veremos como estruturar seu texto para conseguir uma nota máxima, explorando os critérios de avaliação e técnicas de argumentação."
   },
   {
@@ -41,13 +54,13 @@ const samplePendingVideos = [
       avatar: "https://i.pravatar.cc/150?img=12"
     },
     uploadDate: "3 dias atrás",
-    status: "pending" as const,
+    status: "pending",
     transcription: "Neste tutorial, vamos aprender a montar e programar sensores para nossos projetos de robótica. Começaremos com sensores ultrassônicos e depois avançaremos para sensores infravermelhos e de temperatura."
   }
 ];
 
-// Sample data for approved and rejected videos
-const sampleApprovedVideos = [
+// Sample data for approved and rejected videos, now with transcription
+const sampleApprovedVideos: VideoData[] = [
   {
     id: "4",
     title: "História do Brasil - Era Vargas",
@@ -57,7 +70,8 @@ const sampleApprovedVideos = [
       avatar: "https://i.pravatar.cc/150?img=18"
     },
     uploadDate: "1 semana atrás",
-    status: "approved" as const
+    status: "approved",
+    transcription: "Nesta aula sobre a Era Vargas, vamos analisar o período em que Getúlio Vargas governou o Brasil, abordando o Estado Novo e as transformações políticas e econômicas do país."
   },
   {
     id: "5",
@@ -68,11 +82,12 @@ const sampleApprovedVideos = [
       avatar: "https://i.pravatar.cc/150?img=19"
     },
     uploadDate: "2 semanas atrás",
-    status: "approved" as const
+    status: "approved",
+    transcription: "Nesta aula de geometria espacial, abordaremos os poliedros, seus elementos, classificações e propriedades. Vamos estudar os poliedros de Platão e resolver exercícios práticos."
   }
 ];
 
-const sampleRejectedVideos = [
+const sampleRejectedVideos: VideoData[] = [
   {
     id: "6",
     title: "Análise Literária - Machado de Assis",
@@ -82,14 +97,15 @@ const sampleRejectedVideos = [
       avatar: "https://i.pravatar.cc/150?img=23"
     },
     uploadDate: "3 dias atrás",
-    status: "rejected" as const
+    status: "rejected",
+    transcription: "Analisaremos nesta aula as principais obras de Machado de Assis, com foco em Dom Casmurro e Memórias Póstumas de Brás Cubas, explorando os temas recorrentes e o estilo narrativo do autor."
   }
 ];
 
 export default function VideoModeration() {
-  const [pendingVideos, setPendingVideos] = useState(samplePendingVideos);
-  const [approvedVideos, setApprovedVideos] = useState(sampleApprovedVideos);
-  const [rejectedVideos, setRejectedVideos] = useState(sampleRejectedVideos);
+  const [pendingVideos, setPendingVideos] = useState<VideoData[]>(samplePendingVideos);
+  const [approvedVideos, setApprovedVideos] = useState<VideoData[]>(sampleApprovedVideos);
+  const [rejectedVideos, setRejectedVideos] = useState<VideoData[]>(sampleRejectedVideos);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
 
@@ -112,7 +128,7 @@ export default function VideoModeration() {
   };
 
   // Filter videos by search term and date
-  const filterVideos = (videos: typeof samplePendingVideos) => {
+  const filterVideos = (videos: VideoData[]) => {
     return videos.filter(video => {
       const matchesSearch = video.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                            video.author.name.toLowerCase().includes(searchTerm.toLowerCase());

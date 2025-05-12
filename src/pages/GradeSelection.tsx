@@ -40,7 +40,8 @@ export default function GradeSelection() {
     { id: "9-12", label: "9º ano ao 3º ano do Ensino Médio" }
   ];
 
-  const gradesByAgeGroup: Record<AgeGroup, { value: Grade; label: string }[]> = {
+  // Corrigindo a definição de Record para não incluir "null" como chave
+  const gradesByAgeGroup: Record<NonNullable<AgeGroup>, { value: Grade; label: string }[]> = {
     "1-5": [
       { value: "1", label: "1º ano" },
       { value: "2", label: "2º ano" },
@@ -58,8 +59,7 @@ export default function GradeSelection() {
       { value: "10", label: "1º ano EM" },
       { value: "11", label: "2º ano EM" },
       { value: "12", label: "3º ano EM" }
-    ],
-    "null": []
+    ]
   };
 
   const filteredStudents = students.filter(
@@ -108,7 +108,7 @@ export default function GradeSelection() {
             <h1 className="text-2xl font-bold mb-2">Selecione sua série</h1>
             <p className="text-muted-foreground">Escolha a sua série atual</p>
           </div>
-          {gradesByAgeGroup[selectedAgeGroup].map((grade) => (
+          {selectedAgeGroup && gradesByAgeGroup[selectedAgeGroup]?.map((grade) => (
             <Button
               key={grade.value}
               onClick={() => setSelectedGrade(grade.value)}
